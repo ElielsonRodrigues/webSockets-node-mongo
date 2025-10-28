@@ -1,15 +1,15 @@
-const socket = io();
+import { emitirTextoEditor } from "./socket-front.js";
 
 const textoEditor = document.getElementById("editor-texto");
 
 textoEditor.addEventListener("keyup", () => {
     //console.log('Telca')
-    socket.emit("texto_editor", textoEditor.value);
-
+    emitirTextoEditor(textoEditor.value);
 });
 
-
-socket.on("texto_editor_clientes", (texto) => {
-    //console.log(texto);
+function atualizaTextoEditor(texto) {
     textoEditor.value = texto;
-});
+}
+
+export { atualizaTextoEditor };
+
