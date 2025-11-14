@@ -1,33 +1,20 @@
+
+import { encontrarDocumento, atualizarDocumento } from "./documentosController.js";
+
 import io from "./servidor.js";
-
-const documentos = [
-
-    {
-        nome: "JavaScript",
-        texto: "texto javascript"
-    },
-    {
-        nome: "Node",
-        texto: "texto node"
-    },
-    {
-        nome: "Socket.io",
-        texto: "texto socket.io"
-    }
-];
 
 io.on("connection", (socket) => {
     console.log("Um Cliente se conectou... Cliente: " + socket.id);
 
     //CAPTURANDO EVENTO POR NOME
-    socket.on("selecionar_documento", (nomeDocumento, devolverTexto) => {
+    socket.on("selecionar_documento", async (nomeDocumento, devolverTexto) => {
         //console.log(nome)
 
         //JUNTA TODOS OS CLIENTE COMO NOME DO MESMO DOCUMENTO
         socket.join(nomeDocumento);
 
-        const documento = encontrarDocumento(nomeDocumento);
-        //console.log(documento);
+        const documento = await encontrarDocumento(nomeDocumento);
+        console.log(documento);
 
         if (documento) {
             devolverTexto(documento.texto);
@@ -35,7 +22,7 @@ io.on("connection", (socket) => {
 
     });
 
-    socket.on("texto_editor", ({ texto, nomeDocumento }) => {
+    socket.on("texto_editor", async ({ texto, nomeDocumento }) => {
         //console.log(texto);
 
         //ENVIA O EVENTO PARA TODOS OS CLIENTES
@@ -44,19 +31,17 @@ io.on("connection", (socket) => {
         //ENVIA O EVENTO PARA TODOS OS CLIENTES, EXCETO ELE MESMO
         //socket.broadcast.emit("texto_editor_clientes", texto);
 
-        const documento = encontrarDocumento(nomeDocumento);
 
-        if (documento) {
-            documento.texto = texto;
+        //RETORNA DOCUMENTO DO BANCO DE DADOS
+        //const documento = encontrarDocumento(nomeDocumento);
+
+        // ATUALIZA OS DOCUMENTOS NO BANCO, DE ACORDO COM NOME E TEXTO
+        const atualizacao = await atualizarDocumento(nomeDocumento, texto);
+        
+        if (atualizacao.modifiedCount) {
             socket.to(nomeDocumento).emit("texto_editor_clientes", texto);
         }
+        
     })
 });
 
-function encontrarDocumento(nome) {
-    const documento = documentos.find((documento) => {
-        return documento.nome === nome;
-    });
-
-    return documento;
-}
