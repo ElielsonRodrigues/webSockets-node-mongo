@@ -2,15 +2,27 @@ import { atualizaTextoEditor } from "./index.js";
 
 const socket = io();
 
-function emitirTextoEditor(texto) {
-    socket.emit("texto_editor", texto);
+
+// FUNÇÃO DISPARA O EVENTO COM NOME DO DOCUMENTO
+function selecionarDocumento(nome) {
+    socket.emit("selecionar_documento", nome, (texto) => {
+        atualizaTextoEditor(texto);
+
+    });
 }
 
+function emitirTextoEditor(dados) {
+    socket.emit("texto_editor", dados);
+}
+
+socket.on("texto_documento", (texto) => {
+    atualizaTextoEditor(texto);
+});
 
 socket.on("texto_editor_clientes", (texto) => {
     //console.log(texto);
     atualizaTextoEditor(texto);
 
 });
-export { emitirTextoEditor };
+export { emitirTextoEditor, selecionarDocumento };
 
