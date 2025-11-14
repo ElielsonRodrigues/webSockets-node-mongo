@@ -1,34 +1,19 @@
-import { emitirTextoEditor, selecionarDocumento } from "./socket-front.js";
+import "./socket-front-index.js"
 
-// CAPTURA OS PARAMETROS DA URL
-const parametrosUrl = new URLSearchParams(window.location.search);
+const listaDocumentos = document.getElementById("lista-documentos");
 
-//CAPTURA O NOME DO DOCUMENTO PASSADO VIA URL EXEMPLO ?nome=JavaScript
-const nomeDocumento = parametrosUrl.get('nome');
 
-//CAPTURA O ATRIBUTO  HTML QUE CONTEM O TITULO DO DOCUMENTO
-const tituloDocumento = document.getElementById("titulo-documento");
+function inserirLinkDocumento(nomeDocumento) {
 
-const textoEditor = document.getElementById("editor-texto");
+    listaDocumentos.innerHTML += `
+     <a 
+        href="documento.html?nome=${nomeDocumento}" 
+        class="list-group-item list-group-item-action">
+            ${nomeDocumento}
+    </a>`;
 
-//ATUALZA O TITULO DO DOCUMENTO
-tituloDocumento.textContent = nomeDocumento || "Documento sem Título";
-
-selecionarDocumento(nomeDocumento);
-
-textoEditor.addEventListener("keyup", () => {
-    //console.log('Telca')
-    emitirTextoEditor(
-        {
-            texto: textoEditor.value,
-            nomeDocumento,
-        }
-    );
-});
-
-function atualizaTextoEditor(texto) {
-    textoEditor.value = texto;
 }
 
-export { atualizaTextoEditor };
+//inserirLinkDocumento("JavaScript");
 
+export { inserirLinkDocumento };

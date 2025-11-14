@@ -1,16 +1,19 @@
 import { documentosCollection } from "./dbConnect.js";
 
+
+function listarDocumentos() {
+
+    const listar = documentosCollection.find().toArray();
+
+    return listar;
+}
+
+
 function encontrarDocumento(nome) {
-    /*
-    const documento = documentos.find((documento) => {
-        return documento.nome === nome;
-    });
-    */
 
     const documento = documentosCollection.findOne({
         nome: nome
     })
-
     return documento;
 }
 
@@ -22,10 +25,8 @@ function atualizarDocumento(nome, texto) {
         $set: {
             texto
         }
-    }
-    )
+    });
     return atualizar;
 }
 
-
-export { encontrarDocumento, atualizarDocumento };
+export { encontrarDocumento, atualizarDocumento, listarDocumentos };

@@ -1,10 +1,16 @@
 
-import { encontrarDocumento, atualizarDocumento } from "./documentosController.js";
+import { encontrarDocumento, atualizarDocumento, listarDocumentos } from "./documentosController.js";
 
 import io from "./servidor.js";
 
 io.on("connection", (socket) => {
-    console.log("Um Cliente se conectou... Cliente: " + socket.id);
+    //console.log("Um Cliente se conectou... Cliente: " + socket.id);
+    socket.on("obter_documentos", async (devolverDocumentos) => {
+        //console.log("solicitando documentos");
+        const documentos = await listarDocumentos();
+        devolverDocumentos(documentos);
+
+    });
 
     //CAPTURANDO EVENTO POR NOME
     socket.on("selecionar_documento", async (nomeDocumento, devolverTexto) => {
@@ -14,7 +20,7 @@ io.on("connection", (socket) => {
         socket.join(nomeDocumento);
 
         const documento = await encontrarDocumento(nomeDocumento);
-        console.log(documento);
+        //console.log(documento);
 
         if (documento) {
             devolverTexto(documento.texto);
@@ -37,11 +43,11 @@ io.on("connection", (socket) => {
 
         // ATUALIZA OS DOCUMENTOS NO BANCO, DE ACORDO COM NOME E TEXTO
         const atualizacao = await atualizarDocumento(nomeDocumento, texto);
-        
+
         if (atualizacao.modifiedCount) {
             socket.to(nomeDocumento).emit("texto_editor_clientes", texto);
         }
-        
+
     })
 });
 
