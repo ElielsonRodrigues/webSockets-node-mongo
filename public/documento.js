@@ -1,4 +1,4 @@
-import { emitirTextoEditor, selecionarDocumento } from "./socket-front.js";
+import { emitirExcluirDocumento, emitirTextoEditor, selecionarDocumento } from "./socket-front.js";
 
 // CAPTURA OS PARAMETROS DA URL
 const parametrosUrl = new URLSearchParams(window.location.search);
@@ -8,8 +8,8 @@ const nomeDocumento = parametrosUrl.get('nome');
 
 //CAPTURA O ATRIBUTO  HTML QUE CONTEM O TITULO DO DOCUMENTO
 const tituloDocumento = document.getElementById("titulo-documento");
-
 const textoEditor = document.getElementById("editor-texto");
+const botaoExcluir = document.getElementById("excluir-documento");
 
 //ATUALZA O TITULO DO DOCUMENTO
 tituloDocumento.textContent = nomeDocumento || "Documento sem Título";
@@ -26,9 +26,25 @@ textoEditor.addEventListener("keyup", () => {
     );
 });
 
+botaoExcluir.addEventListener("click", () => {
+    emitirExcluirDocumento(nomeDocumento);
+});
+
+
 function atualizaTextoEditor(texto) {
     textoEditor.value = texto;
 }
 
-export { atualizaTextoEditor };
+function alertERedirect(nome) {
+    //verifica se a pessoa
+    // (cliente esta na mesma sala, se tiver exclui e redireciona)
+    if (nome === nomeDocumento) {
+        alert(`Documento ${nome} excluido`);
+        window.location.href = "/";
+    }
+}
+
+
+
+export { atualizaTextoEditor, alertERedirect };
 

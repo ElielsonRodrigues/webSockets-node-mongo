@@ -17,6 +17,14 @@ function encontrarDocumento(nome) {
     return documento;
 }
 
+function adicionarDocumento(nome) {
+
+    const salvar = documentosCollection.insertOne({
+        nome, texto: ""
+    });
+    return salvar;
+}
+
 function atualizarDocumento(nome, texto) {
 
     const atualizar = documentosCollection.updateOne({
@@ -29,4 +37,12 @@ function atualizarDocumento(nome, texto) {
     return atualizar;
 }
 
-export { encontrarDocumento, atualizarDocumento, listarDocumentos };
+function excluirDocumento(nome) {
+
+    const excluir = documentosCollection.deleteOne({
+        nome
+    });
+    return excluir;
+}
+
+export { encontrarDocumento, atualizarDocumento, listarDocumentos, adicionarDocumento, excluirDocumento };

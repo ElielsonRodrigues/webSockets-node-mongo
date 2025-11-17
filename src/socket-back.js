@@ -1,5 +1,5 @@
 
-import { encontrarDocumento, atualizarDocumento, listarDocumentos } from "./documentosController.js";
+import { encontrarDocumento, atualizarDocumento, listarDocumentos, adicionarDocumento, excluirDocumento } from "./documentosController.js";
 
 import io from "./servidor.js";
 
@@ -10,6 +10,25 @@ io.on("connection", (socket) => {
         const documentos = await listarDocumentos();
         devolverDocumentos(documentos);
 
+    });
+
+
+    socket.on("adicionar_documento", async (nome) => {
+
+
+        const documentoExiste = (await encontrarDocumento(nome)) !== null;
+
+        //VERIFICANDO SE JA EXISTE U DOCUMENTO CADASTRADO, SE CASO NÃO TIVER CADASTRA
+        if (documentoExiste) {
+            socket.emit("documento_existente", nome);
+        } else {
+            const resultado = await adicionarDocumento(nome);
+            //console.log(resultado);    
+            if (resultado.acknowledged) {
+                io.emit("adicionar_documento_interface", nome);
+
+            }
+        }
     });
 
     //CAPTURANDO EVENTO POR NOME
@@ -49,5 +68,12 @@ io.on("connection", (socket) => {
         }
 
     })
+
+    socket.on("excluir_documento", async (nome) => {
+        const resultado = await excluirDocumento(nome);
+        if (resultado.deletedCount) {
+            io.emit("excluido_sucesso", nome);
+        }
+    });
 });
 
